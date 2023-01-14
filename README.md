@@ -12,43 +12,44 @@ ArgoCD provides multicluster deployment functionalities. For the purpose of this
 
 Configure the application and link to your fork (replace the GITHUB_USERNAME):
 
-kubectl create namespace ecsdemo-nodejs
-argocd app create ecsdemo-nodejs --repo https://github.com/GITHUB_USERNAME/ecsdemo-nodejs.git --path kubernetes --dest-server https://kubernetes.default.svc --dest-namespace ecsdemo-nodejs
+kubectl create namespace argocd-nodejs
+argocd app create argocd-nodejs --repo https://github.com/guilhermerodriguesti/argocd-nodejs.git --path kubernetes --dest-server https://kubernetes.default.svc --dest-namespace argocd-nodejs
+
 Application is now setup, let’s have a look at the deployed application state:
 
-argocd app get ecsdemo-nodejs
+argocd app get argocd-nodejs
 You should have this output:
 
 Health Status:      Missing
 
 GROUP       KIND              NAMESPACE         NAME              STATUS     HEALTH   HOOK  MESSAGE
-_           Service           ecsdemo-nodejs    ecsdemo-nodejs    OutOfSync  Missing        
-apps        Deployment        default           ecsdemo-nodejs    OutOfSync  Missing        
+_           Service           argocd-nodejs    argocd-nodejs    OutOfSync  Missing        
+apps        Deployment        default          argocd-nodejs   OutOfSync  Missing        
 We can see that the application is in an OutOfSync status since the application has not been deployed yet. We are now going to sync our application:
 
-argocd app sync ecsdemo-nodejs
+argocd app sync argocd-nodejs
 After a couple of minutes our application should be synchronized.
 
 GROUP  KIND        NAMESPACE       NAME            STATUS  HEALTH   HOOK  MESSAGE
-_      Service     ecsdemo-nodejs  ecsdemo-nodejs  Synced  Healthy        service/ecsdemo-nodejs created
-apps   Deployment  default         ecsdemo-nodejs  Synced  Healthy        deployment.apps/ecsdemo-nodejs created
+_      Service     argocd-nodejs  argocd-nodejs  Synced  Healthy        service/argocd-nodejs created
+apps   Deployment  default         argocd-nodejs  Synced  Healthy        deployment.apps/argocd-nodejs created
 
 Update your application
 Go to your Github fork repository:
 
-Update spec.replicas: 2 in ecsdemo-nodejs/kubernetes/deployment.yaml
+Update spec.replicas: 2 in argocd-nodejs/kubernetes/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ecsdemo-nodejs
+  name: argocd-nodejs
   labels:
-    app: ecsdemo-nodejs
+    app: argocd-nodejs
   namespace: default
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: ecsdemo-nodejs
+      app: argocd-nodejs
   strategy:
     rollingUpdate:
       maxSurge: 25%
@@ -57,12 +58,12 @@ spec:
   template:
     metadata:
       labels:
-        app: ecsdemo-nodejs
+        app: argocd-nodejs
     spec:
       containers:
       - image: brentley/ecsdemo-nodejs:latest
         imagePullPolicy: Always
-        name: ecsdemo-nodejs
+        name: argocd-nodejs
         ports:
         - containerPort: 3000
           protocol: TCP
