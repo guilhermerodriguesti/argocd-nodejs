@@ -6,7 +6,7 @@ metadata:
     app: argocd-nodejs
   namespace: default
 spec:
-  replicas: 2
+  replicas: 4
   selector:
     matchLabels:
       app: argocd-nodejs
